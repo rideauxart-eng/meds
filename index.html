@@ -1496,18 +1496,10 @@
             const data = loadData();
             const med = data.meds[index];
             
-            // Clear last fill date
+            // Clear last fill date (keep pharmacy info and supply days)
             med.lastFillDate = '';
             
-            // Clear pharmacy info
-            med.pharmacy = {
-                location: '',
-                address: '',
-                hours: '',
-                phone: ''
-            };
-            
-            // Reset all steps
+            // Reset all workflow steps
             med.steps = {
                 inStock: '',
                 rxOnFile: '',
