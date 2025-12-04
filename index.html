@@ -1496,9 +1496,16 @@
             const data = loadData();
             const med = data.meds[index];
             
-            // Set last fill date to today
-            const today = new Date();
-            med.lastFillDate = today.toISOString().split('T')[0];
+            // Clear last fill date
+            med.lastFillDate = '';
+            
+            // Clear pharmacy info
+            med.pharmacy = {
+                location: '',
+                address: '',
+                hours: '',
+                phone: ''
+            };
             
             // Reset all steps
             med.steps = {
