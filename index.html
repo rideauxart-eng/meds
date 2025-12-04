@@ -1,0 +1,1543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medication Pipeline Dashboard</title>
+    <style>
+        :root {
+            /* Light mode (default) */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f5f5;
+            --bg-tertiary: #fafafa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --border-color: #cccccc;
+            --border-light: #dddddd;
+            
+            /* Accent colors */
+            --accent-red: #c62828;
+            --accent-red-light: #ef5350;
+            --accent-blue: #1565c0;
+            --accent-blue-light: #64b5f6;
+            --accent-green: #2e7d32;
+            --accent-green-light: #66bb6a;
+            --accent-orange: #ef6c00;
+            --accent-orange-light: #ffa726;
+            
+            /* Cell backgrounds - Light */
+            --cell-med: #fafafa;
+            --cell-pharmacy: #e3f2fd;
+            --cell-refill: #c8e6c9;
+            --cell-precheck: #fff3cd;
+            --cell-step1: #fff3e0;
+            --cell-step2: #fce4ec;
+            --cell-step3: #f3e5f5;
+            --cell-step4: #e8eaf6;
+            --cell-step5: #e3f2fd;
+            --cell-step6: #e8f5e9;
+            
+            /* Status backgrounds */
+            --status-ok-bg: #c8e6c9;
+            --status-ok-text: #1b5e20;
+            --status-soon-bg: #ffe0b2;
+            --status-soon-text: #e65100;
+            --status-now-bg: #ffcdd2;
+            --status-now-text: #b71c1c;
+            --status-past-bg: #f8bbd9;
+            --status-past-text: #880e4f;
+            
+            /* Select status */
+            --select-yes-bg: #c8e6c9;
+            --select-yes-border: #4caf50;
+            --select-yes-text: #1b5e20;
+            --select-no-bg: #ffcdd2;
+            --select-no-border: #e53935;
+            --select-no-text: #b71c1c;
+            --select-waiting-bg: #fff9c4;
+            --select-waiting-border: #fbc02d;
+            --select-waiting-text: #5d4e00;
+            
+            /* Input backgrounds */
+            --input-bg: #ffffff;
+            --input-text: #333333;
+            
+            /* Special sections */
+            --script-bg: #fff8e1;
+            --script-border: #ff8f00;
+            --script-title: #e65100;
+            --workflow-bg: #e3f2fd;
+            --workflow-border: #1976d2;
+            --workflow-title: #1565c0;
+            
+            /* Amazon/OTC */
+            --amazon-header: #ff9900;
+            --amazon-border: #cc7a00;
+            --otc-header: #1976d2;
+            --otc-border: #1565c0;
+        }
+        
+        [data-theme="dark"] {
+            /* Dark mode */
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --text-primary: #e0e0e0;
+            --text-secondary: #999999;
+            --text-muted: #777777;
+            --border-color: #444444;
+            --border-light: #555555;
+            
+            /* Accent colors */
+            --accent-red: #ef5350;
+            --accent-red-light: #ff8a80;
+            --accent-blue: #64b5f6;
+            --accent-blue-light: #90caf9;
+            --accent-green: #66bb6a;
+            --accent-green-light: #81c784;
+            --accent-orange: #ffa726;
+            --accent-orange-light: #ffb74d;
+            
+            /* Cell backgrounds - Dark */
+            --cell-med: #1e1e1e;
+            --cell-pharmacy: #1a3a5c;
+            --cell-refill: #1b4332;
+            --cell-precheck: #5c4d1a;
+            --cell-step1: #5c3d1a;
+            --cell-step2: #4a1a2e;
+            --cell-step3: #3d1a4a;
+            --cell-step4: #1a2a4a;
+            --cell-step5: #1a3a5c;
+            --cell-step6: #1a3d2e;
+            
+            /* Status backgrounds */
+            --status-ok-bg: #1b4332;
+            --status-ok-text: #81c784;
+            --status-soon-bg: #5c3d1a;
+            --status-soon-text: #ffb74d;
+            --status-now-bg: #4a1a1a;
+            --status-now-text: #ef5350;
+            --status-past-bg: #4a1a3d;
+            --status-past-text: #f48fb1;
+            
+            /* Select status */
+            --select-yes-bg: #1b4332;
+            --select-yes-border: #66bb6a;
+            --select-yes-text: #81c784;
+            --select-no-bg: #4a1a1a;
+            --select-no-border: #ef5350;
+            --select-no-text: #ef5350;
+            --select-waiting-bg: #5c4d1a;
+            --select-waiting-border: #ffc107;
+            --select-waiting-text: #ffca28;
+            
+            /* Input backgrounds */
+            --input-bg: #2d2d2d;
+            --input-text: #e0e0e0;
+            
+            /* Special sections */
+            --script-bg: #2d2a1a;
+            --script-border: #ffb74d;
+            --script-title: #ffb74d;
+            --workflow-bg: #1a2a3d;
+            --workflow-border: #64b5f6;
+            --workflow-title: #64b5f6;
+            
+            /* Amazon/OTC */
+            --amazon-header: #5c3d1a;
+            --amazon-border: #444444;
+            --otc-header: #1a3a5c;
+            --otc-border: #444444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        /* Header with toggle */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+        
+        h1 {
+            font-size: 20px;
+            color: var(--text-primary);
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+        
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--bg-tertiary);
+            border-radius: 13px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            transition: background 0.3s;
+        }
+        
+        .toggle-switch::before {
+            content: '☀️';
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 14px;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            right: 4px;
+            top: 3px;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+        
+        [data-theme="dark"] .toggle-switch::before {
+            content: '🌙';
+        }
+        
+        [data-theme="dark"] .toggle-switch::after {
+            transform: translateX(-22px);
+            background: var(--accent-blue-light);
+        }
+        
+        .subtitle {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            padding: 10px 16px;
+            background: var(--bg-secondary);
+            border-radius: 6px;
+            margin-bottom: 16px;
+            align-items: center;
+            border: 1px solid var(--border-color);
+        }
+        
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        
+        .status-dot.red { background: var(--accent-red); }
+        .status-dot.orange { background: var(--accent-orange); }
+        .status-dot.green { background: var(--accent-green); }
+        
+        .reset-btn {
+            margin-left: auto;
+            background: var(--accent-red);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        
+        .reset-btn:hover {
+            background: var(--accent-red-light);
+        }
+        
+        .section-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin: 20px 0 8px 0;
+            padding: 5px 10px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            display: inline-block;
+            border: 1px solid var(--border-color);
+        }
+        
+        .legend {
+            display: flex;
+            gap: 16px;
+            font-size: 9px;
+            margin-bottom: 10px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .legend-box {
+            width: 12px;
+            height: 12px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .legend-box.yellow { background: var(--cell-precheck); }
+        .legend-box.green { background: var(--cell-refill); }
+        .legend-box.step1 { background: var(--cell-step1); }
+        .legend-box.step2 { background: var(--cell-step2); }
+        .legend-box.step3 { background: var(--cell-step3); }
+        .legend-box.step4 { background: var(--cell-step4); }
+        .legend-box.step5 { background: var(--cell-step5); }
+        .legend-box.step6 { background: var(--cell-step6); }
+        
+        /* Main table */
+        .tracker {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-bottom: 20px;
+        }
+        
+        .tracker th {
+            background: var(--bg-secondary);
+            padding: 8px 6px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            font-weight: 600;
+            font-size: 10px;
+            color: var(--text-primary);
+        }
+        
+        .tracker td {
+            padding: 8px 6px;
+            border: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+        
+        .tracker .med-cell {
+            background: var(--cell-med);
+            width: 130px;
+        }
+        
+        .med-name {
+            font-weight: 600;
+            font-size: 11px;
+            margin-bottom: 2px;
+            color: var(--text-primary);
+        }
+        
+        .med-details {
+            font-size: 9px;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+        
+        .manufacturer {
+            color: var(--accent-red);
+            font-weight: 600;
+        }
+        
+        .supply-days {
+            color: var(--accent-blue);
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 1px 4px;
+            border-radius: 2px;
+            font-size: 8px;
+            font-weight: 600;
+            margin-top: 3px;
+        }
+        
+        .tag-controlled {
+            background: #ff5722;
+            color: white;
+        }
+        
+        .tag-variable {
+            background: #ff9800;
+            color: white;
+        }
+        
+        /* Pharmacy cell */
+        .pharmacy-cell {
+            background: var(--cell-pharmacy);
+            width: 160px;
+            font-size: 9px;
+        }
+        
+        .pharmacy-cell input {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            padding: 3px 5px;
+            font-size: 9px;
+            margin-bottom: 3px;
+            border-radius: 2px;
+            background: var(--input-bg);
+            color: var(--input-text);
+        }
+        
+        .pharmacy-cell input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .pharmacy-cell label {
+            display: block;
+            color: var(--text-secondary);
+            font-size: 8px;
+            margin-bottom: 1px;
+        }
+        
+        .pharmacy-cell .cvs-header {
+            font-weight: 600;
+            color: var(--accent-red);
+            font-size: 9px;
+            margin-bottom: 4px;
+        }
+        
+        /* Date cells */
+        .precheck-cell {
+            background: var(--cell-precheck);
+            width: 90px;
+            text-align: center;
+        }
+        
+        .refill-cell {
+            background: var(--cell-refill);
+            width: 90px;
+            text-align: center;
+        }
+        
+        .date-input {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            font-size: 10px;
+            border-radius: 2px;
+            text-align: center;
+            background: var(--input-bg);
+            color: var(--input-text);
+        }
+        
+        .date-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .calculated-date {
+            padding: 4px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 4px;
+            display: inline-block;
+        }
+        
+        .date-ok { background: var(--status-ok-bg); color: var(--status-ok-text); }
+        .date-soon { background: var(--status-soon-bg); color: var(--status-soon-text); }
+        .date-now { background: var(--status-now-bg); color: var(--status-now-text); animation: pulse 1s infinite; }
+        .date-past { background: var(--status-past-bg); color: var(--status-past-text); }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        .days-label {
+            font-size: 9px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        /* Supply cell */
+        .supply-cell {
+            width: 70px;
+            text-align: center;
+            background: var(--cell-med);
+        }
+        
+        .supply-input {
+            width: 50px;
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            font-size: 10px;
+            border-radius: 2px;
+            text-align: center;
+            background: var(--input-bg);
+            color: var(--input-text);
+        }
+        
+        .supply-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        /* Pipeline cells */
+        .action-cell {
+            background: var(--cell-step2);
+            width: 50px;
+            text-align: center;
+        }
+        
+        .waiting-cell {
+            background: var(--cell-step6);
+            width: 50px;
+            text-align: center;
+        }
+        
+        .pipeline-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        .checked-cell {
+            opacity: 0.5;
+        }
+        
+        /* Reset button in table */
+        .reset-cycle-btn {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            font-size: 9px;
+            cursor: pointer;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+        
+        .reset-cycle-btn:hover {
+            background: var(--accent-blue-light);
+        }
+        
+        /* Delivery cells */
+        .delivery-cell {
+            background: var(--cell-step3);
+            width: 50px;
+            text-align: center;
+        }
+        
+        .delivery-date-cell {
+            background: var(--cell-step3);
+            width: 90px;
+            text-align: center;
+        }
+        
+        .delivery-status-cell {
+            background: var(--cell-step3);
+            width: 100px;
+        }
+        
+        .delivery-status-cell select {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            padding: 4px;
+            font-size: 9px;
+            border-radius: 2px;
+            background: var(--input-bg);
+            color: var(--input-text);
+        }
+        
+        .delivery-status-cell select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .status-processing { color: var(--accent-orange); }
+        .status-shipped { color: var(--accent-blue); }
+        .status-outfordelivery { color: var(--accent-green); font-weight: 600; }
+        .status-delivered { color: var(--accent-green); font-weight: 600; }
+        
+        /* Step cells - sequential workflow */
+        .step-cell {
+            text-align: center;
+            font-size: 9px;
+            width: 110px;
+            min-width: 110px;
+            vertical-align: top;
+            padding: 6px 4px;
+        }
+        
+        .step-cell th {
+            padding: 8px 4px;
+        }
+        
+        .step-number {
+            font-size: 9px;
+            color: var(--text-secondary);
+            font-weight: normal;
+        }
+        
+        .step-label {
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-primary);
+            display: block;
+            margin-top: 2px;
+        }
+        
+        .step1 { background: var(--cell-step1); width: 130px; min-width: 130px; }
+        .step2 { background: var(--cell-step2); }
+        .step3 { background: var(--cell-step3); width: 120px; min-width: 120px; }
+        .step4 { background: var(--cell-step4); width: 115px; min-width: 115px; }
+        .step5 { background: var(--cell-step5); }
+        .step6 { background: var(--cell-step6); width: 70px; min-width: 70px; }
+        
+        .step-select {
+            width: 100%;
+            border: 1px solid var(--border-color);
+            padding: 6px 4px;
+            font-size: 11px;
+            border-radius: 3px;
+            background: var(--input-bg);
+            color: var(--input-text);
+            cursor: pointer;
+        }
+        
+        .step-select:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+        
+        .step-select.status-yes {
+            background: var(--select-yes-bg);
+            border-color: var(--select-yes-border);
+            color: var(--select-yes-text);
+            font-weight: 600;
+        }
+        
+        .step-select.status-no {
+            background: var(--select-no-bg);
+            border-color: var(--select-no-border);
+            color: var(--select-no-text);
+            font-weight: 600;
+        }
+        
+        .step-select.status-waiting {
+            background: var(--select-waiting-bg);
+            border-color: var(--select-waiting-border);
+            color: var(--select-waiting-text);
+            font-weight: 600;
+        }
+        
+        .step-select.status-na {
+            background: var(--bg-tertiary);
+            opacity: 0.5;
+        }
+        
+        .step-action {
+            font-size: 10px;
+            color: var(--accent-red);
+            margin-top: 4px;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+        
+        .step-checkbox {
+            width: 22px;
+            height: 22px;
+            cursor: pointer;
+        }
+        
+        .step-complete {
+            opacity: 0.4;
+        }
+        
+        .step-disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        /* Delivery step cells - slightly narrower */
+        .step5.delivery-date {
+            width: 100px;
+            min-width: 100px;
+        }
+        
+        .step5.delivery-status {
+            width: 115px;
+            min-width: 115px;
+        }
+        
+        .step5.delivery-check {
+            width: 60px;
+            min-width: 60px;
+        }
+
+        /* Secondary tables */
+        .secondary-section {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .amazon-table, .otc-table {
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        
+        .amazon-table th {
+            background: var(--amazon-header);
+            padding: 6px 10px;
+            border: 1px solid var(--amazon-border);
+            font-size: 10px;
+        }
+        
+        [data-theme="light"] .amazon-table th {
+            color: white;
+        }
+        
+        [data-theme="dark"] .amazon-table th {
+            color: #ffb74d;
+        }
+        
+        .amazon-table td {
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            background: var(--cell-med);
+        }
+        
+        .otc-table th {
+            background: var(--otc-header);
+            padding: 6px 10px;
+            border: 1px solid var(--otc-border);
+            font-size: 10px;
+        }
+        
+        [data-theme="light"] .otc-table th {
+            color: white;
+        }
+        
+        [data-theme="dark"] .otc-table th {
+            color: #64b5f6;
+        }
+        
+        .otc-table td {
+            padding: 8px 10px;
+            border: 1px solid var(--border-color);
+            background: var(--cell-med);
+        }
+        
+        .simple-checkbox {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        
+        /* Call script */
+        .call-script {
+            margin-top: 20px;
+            padding: 12px;
+            background: var(--script-bg);
+            border-radius: 6px;
+            border-left: 4px solid var(--script-border);
+        }
+        
+        .call-script h3 {
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: var(--script-title);
+        }
+        
+        .script-text {
+            font-style: italic;
+            color: var(--text-secondary);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+        
+        .script-text strong {
+            color: var(--text-primary);
+        }
+        
+        /* Workflow */
+        .workflow {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--workflow-bg);
+            border-radius: 6px;
+            border-left: 4px solid var(--workflow-border);
+        }
+        
+        .workflow h3 {
+            font-size: 12px;
+            margin-bottom: 8px;
+            color: var(--workflow-title);
+        }
+        
+        .workflow ol {
+            margin-left: 20px;
+            font-size: 11px;
+            line-height: 1.7;
+            color: var(--text-secondary);
+        }
+        
+        .workflow strong {
+            color: var(--text-primary);
+        }
+        
+        .workflow li {
+            margin-bottom: 4px;
+        }
+        
+        .workflow ul {
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Medication Pipeline Tracker</h1>
+        <div class="theme-toggle">
+            <span>Theme</span>
+            <div class="toggle-switch" onclick="toggleTheme()"></div>
+        </div>
+    </div>
+    <p class="subtitle">Step-by-step refill workflow • Each step unlocks when previous is complete • Auto-saves locally</p>
+    
+    <div id="app"></div>
+    
+    <script>
+        // Theme toggle functionality
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('medDashboardTheme', newTheme);
+        }
+        
+        // Load saved theme on page load
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('medDashboardTheme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        }
+        
+        loadTheme();
+        // Default medication data
+        const defaultMeds = [
+            {
+                id: 'armodafinil',
+                name: 'Armodafinil 200mg',
+                supplyDays: 30,
+                manufacturer: 'Controlled',
+                tag: 'IN-PERSON',
+                tagClass: 'tag-controlled',
+                pharmacy: { location: '', address: '', hours: '', phone: '' },
+                lastFillDate: '',
+                steps: {
+                    inStock: '',        // '', 'yes', 'no_ordering', 'no_other'
+                    rxOnFile: '',       // '', 'yes', 'no'
+                    rxReceived: '',     // '', 'waiting', 'received'
+                    ready: '',          // '', 'processing', 'ready'
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '', // '', 'processing', 'shipped', 'out'
+                    gotIt: false
+                }
+            },
+            {
+                id: 'wellbutrin300',
+                name: 'Wellbutrin XL 300mg',
+                supplyDays: 90,
+                manufacturer: 'BRAND ONLY',
+                tag: null,
+                pharmacy: { location: '', address: '', hours: '', phone: '' },
+                lastFillDate: '',
+                steps: {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                }
+            },
+            {
+                id: 'wellbutrin150',
+                name: 'Wellbutrin XL 150mg',
+                supplyDays: 30,
+                manufacturer: 'BRAND ONLY',
+                tag: 'VARIABLE',
+                tagClass: 'tag-variable',
+                pharmacy: { location: '', address: '', hours: '', phone: '' },
+                lastFillDate: '',
+                steps: {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                }
+            },
+            {
+                id: 'quetiapine',
+                name: 'Quetiapine 300mg',
+                supplyDays: 90,
+                manufacturer: 'LUPIN',
+                tag: null,
+                pharmacy: { location: '', address: '', hours: '', phone: '' },
+                lastFillDate: '',
+                steps: {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                }
+            },
+            {
+                id: 'lamotrigine',
+                name: 'Lamotrigine 150mg',
+                supplyDays: 90,
+                manufacturer: 'ZYDUS',
+                tag: null,
+                pharmacy: { location: '', address: '', hours: '', phone: '' },
+                lastFillDate: '',
+                steps: {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                }
+            },
+            {
+                id: 'fluoxetine',
+                name: 'Fluoxetine 20mg',
+                supplyDays: 90,
+                manufacturer: 'TEVA',
+                dosing: '2x/day',
+                tag: null,
+                pharmacy: { location: '', address: '', hours: '', phone: '' },
+                lastFillDate: '',
+                steps: {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                }
+            },
+            {
+                id: 'propranolol',
+                name: 'Propranolol 20mg',
+                supplyDays: 90,
+                manufacturer: 'AMNEAL',
+                dosing: '3x/day',
+                tag: null,
+                pharmacy: { location: '', address: '', hours: '', phone: '' },
+                lastFillDate: '',
+                steps: {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                }
+            }
+        ];
+
+        const defaultAmazon = {
+            claritin: { nextDelivery: '', received: false }
+        };
+
+        const defaultOtc = {
+            melatonin: { lastPickup: '', needed: false }
+        };
+
+        function loadData() {
+            const saved = localStorage.getItem('medDashboardV5');
+            if (saved) {
+                const data = JSON.parse(saved);
+                // Ensure all meds have steps object (backward compatibility)
+                data.meds.forEach(med => {
+                    if (!med.steps) {
+                        med.steps = {
+                            inStock: '',
+                            rxOnFile: '',
+                            rxReceived: '',
+                            ready: '',
+                            ordered: false,
+                            expectedDate: '',
+                            deliveryStatus: '',
+                            gotIt: false
+                        };
+                    }
+                    if (!med.lastFillDate) {
+                        med.lastFillDate = '';
+                    }
+                });
+                return data;
+            }
+            return {
+                meds: defaultMeds,
+                amazon: defaultAmazon,
+                otc: defaultOtc
+            };
+        }
+
+        function saveData(data) {
+            localStorage.setItem('medDashboardV5', JSON.stringify(data));
+        }
+
+        function calculateRunOutDate(lastFillDate, supplyDays) {
+            if (!lastFillDate) return null;
+            const fill = new Date(lastFillDate);
+            const runOut = new Date(fill);
+            runOut.setDate(runOut.getDate() + supplyDays);
+            return runOut;
+        }
+
+        function calculatePrecheckDate(lastFillDate, supplyDays) {
+            const runOut = calculateRunOutDate(lastFillDate, supplyDays);
+            if (!runOut) return null;
+            const precheck = new Date(runOut);
+            precheck.setDate(precheck.getDate() - 14);
+            return precheck;
+        }
+
+        function daysUntil(dateStr) {
+            if (!dateStr) return null;
+            const target = new Date(dateStr);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            target.setHours(0, 0, 0, 0);
+            const diff = Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+            return diff;
+        }
+
+        function getPrecheckStatus(lastFillDate, supplyDays) {
+            const precheck = calculatePrecheckDate(lastFillDate, supplyDays);
+            if (!precheck) return { class: '', text: 'Set date' };
+            
+            const days = daysUntil(precheck.toISOString().split('T')[0]);
+            
+            if (days < 0) {
+                return { class: 'date-past', text: `${Math.abs(days)}d overdue` };
+            } else if (days === 0) {
+                return { class: 'date-now', text: 'TODAY' };
+            } else if (days <= 3) {
+                return { class: 'date-soon', text: `${days} days` };
+            } else {
+                return { class: 'date-ok', text: `${days} days` };
+            }
+        }
+
+        function getRunOutStatus(lastFillDate, supplyDays) {
+            const runOut = calculateRunOutDate(lastFillDate, supplyDays);
+            if (!runOut) return { class: '', text: '' };
+            
+            const days = daysUntil(runOut.toISOString().split('T')[0]);
+            
+            if (days < 0) {
+                return { class: 'date-past', text: `${Math.abs(days)}d ago!` };
+            } else if (days === 0) {
+                return { class: 'date-now', text: 'TODAY' };
+            } else if (days <= 7) {
+                return { class: 'date-soon', text: `${days} days` };
+            } else {
+                return { class: 'date-ok', text: `${days} days` };
+            }
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '--';
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        }
+
+        function render() {
+            const data = loadData();
+            const app = document.getElementById('app');
+            
+            let needsAction = 0;
+            let upcoming = 0;
+            let stable = 0;
+            
+            data.meds.forEach(med => {
+                if (!med.lastFillDate) return;
+                const status = getPrecheckStatus(med.lastFillDate, med.supplyDays);
+                if (status.class === 'date-past' || status.class === 'date-now') needsAction++;
+                else if (status.class === 'date-soon') upcoming++;
+                else stable++;
+            });
+
+            app.innerHTML = `
+                <div class="status-bar">
+                    <div class="status-item">
+                        <div class="status-dot red"></div>
+                        <span>${needsAction} need action</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot orange"></div>
+                        <span>${upcoming} upcoming</span>
+                    </div>
+                    <div class="status-item">
+                        <div class="status-dot green"></div>
+                        <span>${stable} stable</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetAll()">Reset All</button>
+                </div>
+                
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-box green"></div> Last Fill</div>
+                    <div class="legend-item"><div class="legend-box yellow"></div> Dates (auto)</div>
+                    <div class="legend-item"><div class="legend-box step1"></div> Step 1</div>
+                    <div class="legend-item"><div class="legend-box step2"></div> Step 2</div>
+                    <div class="legend-item"><div class="legend-box step3"></div> Step 3</div>
+                    <div class="legend-item"><div class="legend-box step4"></div> Step 4</div>
+                    <div class="legend-item"><div class="legend-box step5"></div> Step 5</div>
+                    <div class="legend-item"><div class="legend-box step6"></div> Step 6</div>
+                </div>
+                
+                <div class="section-title">PHARMACY PIPELINE (all require specific manufacturer)</div>
+                
+                <table class="tracker">
+                    <thead>
+                        <tr>
+                            <th>MEDICATION</th>
+                            <th>CVS PHARMACY</th>
+                            <th class="refill-cell">LAST FILL</th>
+                            <th>DAYS</th>
+                            <th class="precheck-cell">RUNS OUT</th>
+                            <th class="precheck-cell">PRE-CHECK</th>
+                            <th class="step-cell step1"><span class="step-number">STEP 1</span><span class="step-label">In Stock?</span></th>
+                            <th class="step-cell step2"><span class="step-number">STEP 2</span><span class="step-label">Rx on File?</span></th>
+                            <th class="step-cell step3"><span class="step-number">STEP 3</span><span class="step-label">Rx Received?</span></th>
+                            <th class="step-cell step4"><span class="step-number">STEP 4</span><span class="step-label">Ready?</span></th>
+                            <th class="step-cell step5 delivery-check"><span class="step-number">STEP 5</span><span class="step-label">Ordered?</span></th>
+                            <th class="step-cell step5 delivery-date"><span class="step-number"></span><span class="step-label">Expected</span></th>
+                            <th class="step-cell step5 delivery-status"><span class="step-number"></span><span class="step-label">Delivery Status</span></th>
+                            <th class="step-cell step6"><span class="step-number">STEP 6</span><span class="step-label">Got It!</span></th>
+                            <th>RESET</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.meds.map((med, i) => renderMedRow(med, i)).join('')}
+                    </tbody>
+                </table>
+                
+                <div class="secondary-section">
+                    <div>
+                        <div class="section-title" style="background:#ff9900;">AMAZON SUBSCRIBE & SAVE</div>
+                        <table class="amazon-table">
+                            <thead>
+                                <tr>
+                                    <th>MEDICATION</th>
+                                    <th>SUPPLY</th>
+                                    <th>NEXT DELIVERY</th>
+                                    <th>✓</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="med-name">Claritin 10mg (100ct)</div>
+                                        <div class="med-details">2 in AM = 50 day supply</div>
+                                    </td>
+                                    <td style="text-align:center;">50 days</td>
+                                    <td>
+                                        <input type="date" class="date-input" value="${data.amazon.claritin.nextDelivery}" 
+                                               onchange="updateAmazon('nextDelivery', this.value)">
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <input type="checkbox" class="simple-checkbox" ${data.amazon.claritin.received ? 'checked' : ''} 
+                                               onchange="updateAmazon('received', this.checked)">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div>
+                        <div class="section-title" style="background:#1976d2;">CVS IN-STORE OTC (batch with Armodafinil)</div>
+                        <table class="otc-table">
+                            <thead>
+                                <tr>
+                                    <th>MEDICATION</th>
+                                    <th>SUPPLY</th>
+                                    <th>LAST PICKUP</th>
+                                    <th>NEED?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="med-name">Melatonin 5mg</div>
+                                        <div class="med-details">1 at night • Always in stock</div>
+                                    </td>
+                                    <td style="text-align:center;">120 days</td>
+                                    <td>
+                                        <input type="date" class="date-input" value="${data.otc.melatonin.lastPickup}" 
+                                               onchange="updateOtc('lastPickup', this.value)">
+                                    </td>
+                                    <td style="text-align:center;">
+                                        <input type="checkbox" class="simple-checkbox" ${data.otc.melatonin.needed ? 'checked' : ''} 
+                                               onchange="updateOtc('needed', this.checked)">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="call-script">
+                    <h3>📞 Pre-Check Call Script</h3>
+                    <div class="script-text">
+                        "Hi, I have a refill for <strong>[MEDICATION]</strong> coming up on <strong>[REFILL DATE]</strong>. 
+                        I need the <strong>[MANUFACTURER]</strong> version specifically. 
+                        Can you check if you have it in stock or order it to arrive by then?"
+                    </div>
+                </div>
+                
+                <div class="workflow">
+                    <h3>📞 Pre-Check Call Workflow (14 days before you run out)</h3>
+                    <ol>
+                        <li><strong>STEP 1 - In Stock?</strong> "Do you have [med] by [manufacturer] in stock?"
+                            <ul style="font-size:11px;margin:4px 0;">
+                                <li>✓ Yes → Move to Step 2</li>
+                                <li>✗ No - Ordering → They're ordering it, wait & check back</li>
+                                <li>✗ No - Try Other → Call another CVS location</li>
+                            </ul>
+                        </li>
+                        <li><strong>STEP 2 - Rx on File?</strong> "Do you have a prescription on file?"
+                            <ul style="font-size:11px;margin:4px 0;">
+                                <li>✓ Yes → Skip to Step 4</li>
+                                <li>✗ No → Call Dr. Giray at (___) ___-____ to request Rx</li>
+                            </ul>
+                        </li>
+                        <li><strong>STEP 3 - Rx Received?</strong> (only if Step 2 = No) Check back with pharmacy
+                            <ul style="font-size:11px;margin:4px 0;">
+                                <li>⏳ Waiting → Dr hasn't sent yet, follow up</li>
+                                <li>✓ Received → Move to Step 4</li>
+                            </ul>
+                        </li>
+                        <li><strong>STEP 4 - Ready?</strong> "Is my prescription ready?"
+                            <ul style="font-size:11px;margin:4px 0;">
+                                <li>⏳ Processing → They're filling it</li>
+                                <li>✓ Ready! → Order delivery (Step 5) or pick up in person</li>
+                            </ul>
+                        </li>
+                        <li><strong>STEP 5 - Delivery</strong> (non-controlled only) Order via CVS app, enter expected date, track status</li>
+                        <li><strong>STEP 6 - Got It!</strong> Check when received → Click "Reset Cycle" to start fresh</li>
+                    </ol>
+                </div>
+            `;
+        }
+
+        function renderMedRow(med, index) {
+            const runOutDate = calculateRunOutDate(med.lastFillDate, med.supplyDays);
+            const runOutStr = runOutDate ? runOutDate.toISOString().split('T')[0] : '';
+            const runOutStatus = getRunOutStatus(med.lastFillDate, med.supplyDays);
+            
+            const precheckDate = calculatePrecheckDate(med.lastFillDate, med.supplyDays);
+            const precheckStr = precheckDate ? precheckDate.toISOString().split('T')[0] : '';
+            const precheckStatus = getPrecheckStatus(med.lastFillDate, med.supplyDays);
+            
+            // Ensure steps object exists
+            if (!med.steps) {
+                med.steps = {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                };
+            }
+            
+            const s = med.steps;
+            const isInPerson = med.tag === 'IN-PERSON';
+            
+            // Determine which steps are enabled based on previous answers
+            const step2Enabled = s.inStock === 'yes' || s.inStock === 'no_ordering';
+            const step3Enabled = step2Enabled && s.rxOnFile === 'no';
+            const step4Enabled = (step2Enabled && s.rxOnFile === 'yes') || (step3Enabled && s.rxReceived === 'received');
+            const step5Enabled = step4Enabled && s.ready === 'ready' && !isInPerson;
+            const step6Enabled = (step4Enabled && s.ready === 'ready' && isInPerson) || 
+                                 (step5Enabled && (s.deliveryStatus === 'out' || s.deliveryStatus === 'shipped'));
+            
+            // Generate action messages based on state
+            let step1Action = '';
+            if (s.inStock === 'no_ordering') step1Action = '⏳ Wait for stock';
+            if (s.inStock === 'no_other') step1Action = '📞 Try another CVS';
+            
+            let step2Action = '';
+            if (s.rxOnFile === 'no') step2Action = '📞 Call Dr. Giray';
+            
+            let step3Action = '';
+            if (s.rxReceived === 'waiting') step3Action = '⏳ Waiting on Dr.';
+            
+            let step4Action = '';
+            if (s.ready === 'processing') step4Action = '⏳ CVS filling...';
+            
+            return `
+                <tr>
+                    <td class="med-cell">
+                        <div class="med-name">${med.name}</div>
+                        <div class="med-details">
+                            <span class="supply-days">${med.supplyDays} day</span>${med.dosing ? ` • ${med.dosing}` : ''}<br>
+                            <span class="manufacturer">${med.manufacturer}</span>
+                        </div>
+                        ${med.tag ? `<span class="tag ${med.tagClass || ''}">${med.tag}</span>` : ''}
+                    </td>
+                    <td class="pharmacy-cell">
+                        <div class="cvs-header">CVS Pharmacy</div>
+                        <label>Location:</label>
+                        <input type="text" value="${med.pharmacy.location}" placeholder="Store #"
+                               onchange="updatePharmacy(${index}, 'location', this.value)">
+                        <label>Address:</label>
+                        <input type="text" value="${med.pharmacy.address}" placeholder="Address"
+                               onchange="updatePharmacy(${index}, 'address', this.value)">
+                        <label>Hours:</label>
+                        <input type="text" value="${med.pharmacy.hours}" placeholder="Hours"
+                               onchange="updatePharmacy(${index}, 'hours', this.value)">
+                        <label>Phone:</label>
+                        <input type="text" value="${med.pharmacy.phone}" placeholder="Phone"
+                               onchange="updatePharmacy(${index}, 'phone', this.value)">
+                    </td>
+                    <td class="refill-cell">
+                        <input type="date" class="date-input" value="${med.lastFillDate}"
+                               onchange="updateLastFillDate(${index}, this.value)">
+                    </td>
+                    <td class="supply-cell">
+                        <input type="number" class="supply-input" value="${med.supplyDays}" min="1" max="180"
+                               onchange="updateSupplyDays(${index}, this.value)">
+                    </td>
+                    <td class="precheck-cell">
+                        <div class="calculated-date ${runOutStatus.class}">
+                            ${runOutStr ? formatDate(runOutStr) : '--'}
+                        </div>
+                        <div class="days-label">${runOutStatus.text}</div>
+                    </td>
+                    <td class="precheck-cell">
+                        <div class="calculated-date ${precheckStatus.class}">
+                            ${precheckStr ? formatDate(precheckStr) : '--'}
+                        </div>
+                        <div class="days-label">${precheckStatus.text}</div>
+                    </td>
+                    
+                    <!-- STEP 1: In Stock? -->
+                    <td class="step-cell step1">
+                        <select class="step-select ${s.inStock === 'yes' ? 'status-yes' : s.inStock ? 'status-no' : ''}"
+                                onchange="updateStep(${index}, 'inStock', this.value)">
+                            <option value="">-- Select --</option>
+                            <option value="yes" ${s.inStock === 'yes' ? 'selected' : ''}>✓ Yes, In Stock</option>
+                            <option value="no_ordering" ${s.inStock === 'no_ordering' ? 'selected' : ''}>✗ No - They're Ordering</option>
+                            <option value="no_other" ${s.inStock === 'no_other' ? 'selected' : ''}>✗ No - Try Another CVS</option>
+                        </select>
+                        ${step1Action ? `<div class="step-action">${step1Action}</div>` : ''}
+                    </td>
+                    
+                    <!-- STEP 2: Rx on File? -->
+                    <td class="step-cell step2 ${!step2Enabled ? 'step-disabled' : ''}">
+                        <select class="step-select ${s.rxOnFile === 'yes' ? 'status-yes' : s.rxOnFile === 'no' ? 'status-no' : ''}"
+                                onchange="updateStep(${index}, 'rxOnFile', this.value)" ${!step2Enabled ? 'disabled' : ''}>
+                            <option value="">-- Select --</option>
+                            <option value="yes" ${s.rxOnFile === 'yes' ? 'selected' : ''}>✓ Yes, Rx on File</option>
+                            <option value="no" ${s.rxOnFile === 'no' ? 'selected' : ''}>✗ No - Need New Rx</option>
+                        </select>
+                        ${step2Action ? `<div class="step-action">${step2Action}</div>` : ''}
+                    </td>
+                    
+                    <!-- STEP 3: Rx Received? (only if Step 2 = No) -->
+                    <td class="step-cell step3 ${!step3Enabled ? 'step-disabled' : ''}">
+                        <select class="step-select ${s.rxReceived === 'received' ? 'status-yes' : s.rxReceived === 'waiting' ? 'status-waiting' : ''}"
+                                onchange="updateStep(${index}, 'rxReceived', this.value)" ${!step3Enabled ? 'disabled' : ''}>
+                            <option value="">-- Select --</option>
+                            <option value="waiting" ${s.rxReceived === 'waiting' ? 'selected' : ''}>⏳ Waiting on Doctor</option>
+                            <option value="received" ${s.rxReceived === 'received' ? 'selected' : ''}>✓ Rx Received!</option>
+                        </select>
+                        ${step3Action ? `<div class="step-action">${step3Action}</div>` : ''}
+                    </td>
+                    
+                    <!-- STEP 4: Ready for Pickup/Delivery? -->
+                    <td class="step-cell step4 ${!step4Enabled ? 'step-disabled' : ''}">
+                        <select class="step-select ${s.ready === 'ready' ? 'status-yes' : s.ready === 'processing' ? 'status-waiting' : ''}"
+                                onchange="updateStep(${index}, 'ready', this.value)" ${!step4Enabled ? 'disabled' : ''}>
+                            <option value="">-- Select --</option>
+                            <option value="processing" ${s.ready === 'processing' ? 'selected' : ''}>⏳ CVS Filling It</option>
+                            <option value="ready" ${s.ready === 'ready' ? 'selected' : ''}>✓ Ready for Pickup!</option>
+                        </select>
+                        ${step4Action ? `<div class="step-action">${step4Action}</div>` : ''}
+                    </td>
+                    
+                    <!-- STEP 5a: Ordered Delivery? -->
+                    <td class="step-cell step5 delivery-check ${!step5Enabled || isInPerson ? 'step-disabled' : ''}">
+                        <input type="checkbox" class="step-checkbox" ${s.ordered ? 'checked' : ''}
+                               onchange="updateStep(${index}, 'ordered', this.checked)" 
+                               ${!step5Enabled || isInPerson ? 'disabled' : ''}>
+                        ${isInPerson ? '<div class="step-action">In-person only</div>' : ''}
+                    </td>
+                    
+                    <!-- STEP 5b: Expected Date -->
+                    <td class="step-cell step5 delivery-date ${!step5Enabled || isInPerson ? 'step-disabled' : ''}">
+                        <input type="date" class="date-input" style="font-size:9px;" value="${s.expectedDate}"
+                               onchange="updateStep(${index}, 'expectedDate', this.value)"
+                               ${!step5Enabled || isInPerson ? 'disabled' : ''}>
+                    </td>
+                    
+                    <!-- STEP 5c: Delivery Status -->
+                    <td class="step-cell step5 delivery-status ${!step5Enabled || isInPerson ? 'step-disabled' : ''}">
+                        <select class="step-select ${s.deliveryStatus === 'out' ? 'status-yes' : s.deliveryStatus ? 'status-waiting' : ''}"
+                                onchange="updateStep(${index}, 'deliveryStatus', this.value)"
+                                ${!step5Enabled || isInPerson ? 'disabled' : ''}>
+                            <option value="">-- Select --</option>
+                            <option value="processing" ${s.deliveryStatus === 'processing' ? 'selected' : ''}>📦 Processing</option>
+                            <option value="shipped" ${s.deliveryStatus === 'shipped' ? 'selected' : ''}>🚚 Shipped</option>
+                            <option value="out" ${s.deliveryStatus === 'out' ? 'selected' : ''}>🏠 Out for Delivery</option>
+                        </select>
+                    </td>
+                    
+                    <!-- STEP 6: Got It! -->
+                    <td class="step-cell step6 ${!step6Enabled && !(step4Enabled && s.ready === 'ready' && isInPerson) ? 'step-disabled' : ''}">
+                        <input type="checkbox" class="step-checkbox" ${s.gotIt ? 'checked' : ''}
+                               onchange="updateStep(${index}, 'gotIt', this.checked)"
+                               ${!step6Enabled && !(step4Enabled && s.ready === 'ready' && isInPerson) ? 'disabled' : ''}>
+                        <div style="font-size:8px;margin-top:2px;">🎉</div>
+                    </td>
+                    
+                    <td style="text-align:center;">
+                        <button class="reset-cycle-btn" onclick="resetCycle(${index})">Reset<br>Cycle</button>
+                    </td>
+                </tr>
+            `;
+        }
+
+        function updatePharmacy(index, field, value) {
+            const data = loadData();
+            data.meds[index].pharmacy[field] = value;
+            saveData(data);
+        }
+
+        function updateLastFillDate(index, value) {
+            const data = loadData();
+            data.meds[index].lastFillDate = value;
+            saveData(data);
+            render();
+        }
+
+        function updateSupplyDays(index, value) {
+            const data = loadData();
+            data.meds[index].supplyDays = parseInt(value) || 30;
+            saveData(data);
+            render();
+        }
+
+        function updateStep(index, field, value) {
+            const data = loadData();
+            if (!data.meds[index].steps) {
+                data.meds[index].steps = {
+                    inStock: '',
+                    rxOnFile: '',
+                    rxReceived: '',
+                    ready: '',
+                    ordered: false,
+                    expectedDate: '',
+                    deliveryStatus: '',
+                    gotIt: false
+                };
+            }
+            data.meds[index].steps[field] = value;
+            saveData(data);
+            render();
+        }
+
+        function resetCycle(index) {
+            const data = loadData();
+            const med = data.meds[index];
+            
+            // Set last fill date to today
+            const today = new Date();
+            med.lastFillDate = today.toISOString().split('T')[0];
+            
+            // Reset all steps
+            med.steps = {
+                inStock: '',
+                rxOnFile: '',
+                rxReceived: '',
+                ready: '',
+                ordered: false,
+                expectedDate: '',
+                deliveryStatus: '',
+                gotIt: false
+            };
+            
+            saveData(data);
+            render();
+        }
+
+        function updateAmazon(field, value) {
+            const data = loadData();
+            data.amazon.claritin[field] = value;
+            saveData(data);
+            render();
+        }
+
+        function updateOtc(field, value) {
+            const data = loadData();
+            data.otc.melatonin[field] = value;
+            saveData(data);
+            render();
+        }
+
+        function resetAll() {
+            if (confirm('Reset all data? This cannot be undone.')) {
+                localStorage.removeItem('medDashboardV5');
+                render();
+            }
+        }
+
+        render();
+    </script>
+</body>
+</html>
