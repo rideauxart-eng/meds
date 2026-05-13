@@ -1,14 +1,21 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "meds",
+  "main": "src/index.js",
   "compatibility_date": "2026-05-13",
+  "compatibility_flags": ["nodejs_compat"],
   "observability": {
     "enabled": true
   },
   "assets": {
-    "directory": "."
+    "directory": ".",
+    "binding": "ASSETS"
   },
-  "compatibility_flags": [
-    "nodejs_compat"
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "meds-db",
+      "database_id": "b4a0ff42-a1ae-4935-ba10-38d62fa0b412"
+    }
   ]
 }
